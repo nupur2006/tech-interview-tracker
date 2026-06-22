@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+/* ── Base Layer ───────────────────────────────────────────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    @apply box-border;
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+
+  body {
+    @apply bg-brand-950 text-brand-100 font-sans;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-white;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-brand-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-600;
+  }
+}
+
+/* ── Component Layer ──────────────────────────────────────────────────────── */
+@layer components {
+  /* Glass card effect */
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+  }
+
+  .glass-hover {
+    @apply glass transition-all duration-300;
+  }
+
+  .glass-hover:hover {
+    @apply bg-white/10 border-white/20 shadow-lg shadow-accent/5;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent-light via-purple-400 to-pink-400;
+  }
+
+  /* Glow effect */
+  .glow {
+    box-shadow: 0 0 60px rgba(99, 102, 241, 0.15),
+      0 0 120px rgba(99, 102, 241, 0.05);
+  }
+
+  .glow-sm {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.1),
+      0 0 60px rgba(99, 102, 241, 0.03);
+  }
+
+  /* Dot grid background */
+  .dot-grid {
+    background-image: radial-gradient(
+      circle,
+      rgba(148, 163, 184, 0.08) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
+}
+
+/* ── Utility Layer ────────────────────────────────────────────────────────── */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animate-delay-500 {
+    animation-delay: 500ms;
+  }
+}
