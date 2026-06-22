@@ -11,7 +11,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ── NextAuth.js required models ──────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum ApplicationStatus {
+  BOOKMARKED
+  APPLIED
+  OA
+  PHONE_SCREEN
+  TECHNICAL
+  ONSITE
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum TimelineEventType {
+  EMAIL
+  CALL
+  OA
+  INTERVIEW
+  OFFER
+  REJECTION
+  NOTE
+}
+
+enum InterviewType {
+  PHONE
+  VIDEO
+  ONSITE
+  TECHNICAL
+}
+
+enum InterviewOutcome {
+  PENDING
+  PASSED
+  FAILED
+  CANCELLED
+}
+
+enum ReminderType {
+  FOLLOW_UP
+  DEADLINE
+  INTERVIEW_PREP
+  GENERAL
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NextAuth.js Required Models
+// ─────────────────────────────────────────────────────────────────────────────
 
 model Account {
   id                String  @id @default(cuid())
@@ -30,6 +79,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -41,6 +91,7 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("sessions")
 }
 
@@ -53,7 +104,9 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// ── Application models ───────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Application Models
+// ─────────────────────────────────────────────────────────────────────────────
 
 model User {
   id            String    @id @default(cuid())
@@ -64,8 +117,149 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
+  // ── NextAuth relations ──
   accounts Account[]
   sessions Session[]
 
+  // ── Domain relations ──
+  applications Application[]
+  companies    Company[]
+  reminders    Reminder[]
+
   @@map("users")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  website   String?
+  logo      String?
+  industry  String?
+  size      String?  // e.g. "1-50", "51-200", "201-1000", "1000+"
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("companies")
+}
+
+model Application {
+  id          String            @id @default(cuid())
+  role        String
+  location    String?
+  status      ApplicationStatus @default(BOOKMARKED)
+  appliedDate DateTime?         @map("applied_date")
+  jobUrl      String?           @map("job_url")
+  notes       String?           @db.Text
+  salaryMin   Int?              @map("salary_min")
+  salaryMax   Int?              @map("salary_max")
+  salaryCurrency String         @default("USD") @map("salary_currency")
+  source      String?           // e.g. "LinkedIn", "Referral", "Company Website"
+  userId      String            @map("user_id")
+  companyId   String            @map("company_id")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contacts        Contact[]
+  timelineEvents  TimelineEvent[]
+  interviews      Interview[]
+  reminders       Reminder[]
+
+  @@index([userId])
+  @@index([companyId])
+  @@index([userId, status])
+  @@index([userId, appliedDate])
+  @@map("applications")
+}
+
+model Contact {
+  id            String  @id @default(cuid())
+  name          String
+  email         String?
+  phone         String?
+  linkedIn      String? @map("linkedin")
+  role          String? // Contact's job title/role at the company
+  relationship  String? // e.g. "Recruiter", "Hiring Manager", "Referral"
+  applicationId String  @map("application_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("contacts")
+}
+
+model TimelineEvent {
+  id            String            @id @default(cuid())
+  type          TimelineEventType
+  date          DateTime
+  title         String
+  description   String?           @db.Text
+  applicationId String            @map("application_id")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([applicationId, date])
+  @@map("timeline_events")
+}
+
+model Interview {
+  id              String           @id @default(cuid())
+  round           Int              @default(1)
+  type            InterviewType
+  scheduledAt     DateTime         @map("scheduled_at")
+  durationMinutes Int?             @default(60) @map("duration_minutes")
+  location        String?          // Physical location or virtual meeting link
+  interviewerName String?          @map("interviewer_name")
+  interviewerRole String?          @map("interviewer_role")
+  outcome         InterviewOutcome @default(PENDING)
+  notes           String?          @db.Text
+  applicationId   String           @map("application_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([scheduledAt])
+  @@index([applicationId, round])
+  @@map("interviews")
+}
+
+model Reminder {
+  id            String       @id @default(cuid())
+  title         String
+  dueDate       DateTime     @map("due_date")
+  type          ReminderType @default(GENERAL)
+  isCompleted   Boolean      @default(false) @map("is_completed")
+  userId        String       @map("user_id")
+  applicationId String?      @map("application_id")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isCompleted])
+  @@index([userId, dueDate])
+  @@index([applicationId])
+  @@map("reminders")
 }
