@@ -27,19 +27,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       if (isOnDashboard) {
         if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login
+        return false;
       }
 
       return true;
     },
-    session({ session, user }) {
+
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+
+    session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id;
+        session.user.id = token.id as string;
       }
       return session;
     },
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
 });
