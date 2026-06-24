@@ -22,7 +22,7 @@ export function ApplicationForm({ initialData, onSubmit, onCancel }: Application
     handleSubmit,
     formState: { errors },
   } = useForm<ApplicationInput>({
-    resolver: zodResolver(applicationSchema),
+    resolver: zodResolver(applicationSchema) as any,
     defaultValues: {
       companyName: initialData?.companyName || "",
       role: initialData?.role || "",

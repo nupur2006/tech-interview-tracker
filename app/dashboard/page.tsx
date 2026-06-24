@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   // Calculate stats
   const total = applications.length;
   const activeCount = applications.filter(
-    (app) => ![ApplicationStatus.OFFER, ApplicationStatus.REJECTED, ApplicationStatus.WITHDRAWN].includes(app.status)
+    (app) => !([ApplicationStatus.OFFER, ApplicationStatus.REJECTED, ApplicationStatus.WITHDRAWN] as ApplicationStatus[]).includes(app.status)
   ).length;
   const offersCount = applications.filter((app) => app.status === ApplicationStatus.OFFER).length;
   
