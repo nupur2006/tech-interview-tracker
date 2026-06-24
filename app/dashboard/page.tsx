@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getApplications } from "@/app/actions/application";
 import { AddApplicationModal } from "@/components/dashboard/add-application-modal";
 import { ApplicationList } from "@/components/dashboard/application-list";
+import { UpcomingInterviewsWidget } from "@/components/dashboard/upcoming-interviews";
 import { ApplicationStatus } from "@prisma/client";
 import type { ApplicationFull } from "@/types";
 
@@ -62,10 +63,17 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Application List */}
-      <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Your Applications</h2>
-        <ApplicationList applications={applications} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Application List */}
+        <div className="lg:col-span-2">
+          <h2 className="text-xl font-semibold text-white mb-4">Your Applications</h2>
+          <ApplicationList applications={applications} />
+        </div>
+        
+        {/* Sidebar */}
+        <div className="space-y-6">
+          <UpcomingInterviewsWidget />
+        </div>
       </div>
     </div>
   );

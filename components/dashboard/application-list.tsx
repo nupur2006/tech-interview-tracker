@@ -3,7 +3,7 @@
 import { useOptimistic, useTransition, useState } from "react";
 import { ApplicationStatus } from "@prisma/client";
 import { format } from "date-fns";
-import { Building2, Calendar, MapPin, DollarSign, ExternalLink, MoreVertical, Trash2 } from "lucide-react";
+import { Building2, Calendar, MapPin, DollarSign, ExternalLink, MoreVertical } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import { updateApplicationStatus, deleteApplication } from "@/app/actions/application";
@@ -26,7 +26,7 @@ export function ApplicationList({ applications }: ApplicationListProps) {
     }
   );
 
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleStatusChange = async (id: string, status: ApplicationStatus) => {

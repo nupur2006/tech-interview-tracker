@@ -24,7 +24,7 @@ export function TimelineList({ events }: TimelineListProps) {
     }
   );
 
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {

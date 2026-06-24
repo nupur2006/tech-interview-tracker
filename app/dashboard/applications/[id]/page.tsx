@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { TimelineList } from "@/components/dashboard/timeline/timeline-list";
 import { AddEventModal } from "@/components/dashboard/timeline/add-event-modal";
+import { AddInterviewModal } from "@/components/dashboard/interview/add-interview-modal";
 import { format } from "date-fns";
 import { Building2, Calendar, MapPin, DollarSign, ExternalLink, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -41,18 +42,23 @@ export default async function ApplicationDetailPage({ params }: { params: { id: 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
       {/* Header Navigation */}
-      <div className="flex items-center gap-4">
-        <Link 
-          href="/dashboard" 
-          className="p-2 -ml-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-100 transition-colors"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Link>
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            {application.role}
-          </h1>
-          <p className="text-gray-500 mt-1">at {application.company.name}</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link 
+            href="/dashboard" 
+            className="p-2 -ml-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-100 transition-colors"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Link>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+              {application.role}
+            </h1>
+            <p className="text-gray-500 mt-1">at {application.company.name}</p>
+          </div>
+        </div>
+        <div>
+          <AddInterviewModal applicationId={application.id} />
         </div>
       </div>
 
