@@ -161,3 +161,33 @@ export async function getAllContacts() {
 
   return contacts;
 }
+
+export async function getContactById(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const contact = await prisma.contact.findUnique({
+    where: { id },
+    include: {
+      application: {
+        include: {
+          company: true,
+        },
+      },
+      interactions: {
+        orderBy: { date: "desc" },
+      },
+      followUps: {
+        orderBy: { dueDate: "asc" },
+      },
+    },
+  });
+
+  if (!contact || contact.application.userId !== session.user.id) {
+    throw new Error("Contact not found or unauthorized");
+  }
+
+  return contact;
+}
