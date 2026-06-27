@@ -16,12 +16,8 @@ export const INTERACTION_TYPE_LABELS: Record<InteractionTypeValue, string> = {
 
 export const interactionSchema = z.object({
   contactId: z.string().min(1, "Contact ID is required"),
-  type: z.enum(INTERACTION_TYPES, {
-    required_error: "Interaction type is required",
-  }),
-  date: z.coerce.date({
-    required_error: "Date is required",
-  }),
+  type: z.enum(["EMAIL", "PHONE_CALL", "MEETING"]),
+  date: z.coerce.date(),
   summary: z
     .string()
     .min(1, "Summary is required")

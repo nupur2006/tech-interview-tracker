@@ -1,4 +1,4 @@
-"use client";
+
 
 import { Briefcase, User, UserCheck, UserCog, Users } from "lucide-react";
 

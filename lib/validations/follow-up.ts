@@ -6,9 +6,7 @@ export const followUpSchema = z
       .string()
       .min(1, "Title is required")
       .max(200, "Title must be under 200 characters"),
-    dueDate: z.coerce.date({
-      required_error: "Due date is required",
-    }),
+    dueDate: z.coerce.date(),
     contactId: z.string().optional(),
     applicationId: z.string().optional(),
   })

@@ -4,6 +4,9 @@ import { notFound, redirect } from "next/navigation";
 import { TimelineList } from "@/components/dashboard/timeline/timeline-list";
 import { AddEventModal } from "@/components/dashboard/timeline/add-event-modal";
 import { AddInterviewModal } from "@/components/dashboard/interview/add-interview-modal";
+import { ContactList } from "@/components/dashboard/contact/contact-list";
+import { FollowUpList } from "@/components/dashboard/contact/follow-up-list";
+import { AddFollowUpModal } from "@/components/dashboard/contact/add-follow-up-modal";
 import { format } from "date-fns";
 import { Building2, Calendar, MapPin, DollarSign, ExternalLink, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -29,6 +32,11 @@ export default async function ApplicationDetailPage({ params }: { params: { id: 
         orderBy: { scheduledAt: "asc" },
         where: { scheduledAt: { gte: new Date() } },
         take: 1,
+      },
+      contacts: true,
+      followUps: {
+        orderBy: { dueDate: "asc" },
+        include: { contact: true },
       },
     },
   });
@@ -159,6 +167,20 @@ export default async function ApplicationDetailPage({ params }: { params: { id: 
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Follow-ups */}
+          <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900 dark:border-gray-800">
+            <div className="flex items-center justify-between mb-4">
+               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Follow-ups</h2>
+               <AddFollowUpModal applicationId={application.id} />
+            </div>
+            <FollowUpList followUps={application.followUps} title="" />
+          </div>
+
+          {/* Contacts */}
+          <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900 dark:border-gray-800">
+            <ContactList contacts={application.contacts} applicationId={application.id} />
           </div>
         </div>
       </div>

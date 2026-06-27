@@ -29,7 +29,7 @@ export function EventForm({ applicationId, initialData, onSubmit, onCancel }: Ev
     handleSubmit,
     formState: { errors },
   } = useForm<TimelineEventInput>({
-    resolver: zodResolver(timelineEventSchema),
+    resolver: zodResolver(timelineEventSchema) as any,
     defaultValues: {
       applicationId,
       type: initialData?.type || TimelineEventType.NOTE,

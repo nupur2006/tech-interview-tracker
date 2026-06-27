@@ -31,7 +31,7 @@ export function LogInteractionModal({ contactId, trigger }: LogInteractionModalP
     reset,
     formState: { errors },
   } = useForm<InteractionInput>({
-    resolver: zodResolver(interactionSchema),
+    resolver: zodResolver(interactionSchema) as any,
     defaultValues: {
       contactId,
       type: "EMAIL",

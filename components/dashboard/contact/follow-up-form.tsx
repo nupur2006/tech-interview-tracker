@@ -34,7 +34,7 @@ export function FollowUpForm({
     handleSubmit,
     formState: { errors },
   } = useForm<FollowUpInput>({
-    resolver: zodResolver(followUpSchema),
+    resolver: zodResolver(followUpSchema) as any,
     defaultValues: {
       title: "",
       contactId: contactId || undefined,

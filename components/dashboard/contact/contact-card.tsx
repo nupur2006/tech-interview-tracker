@@ -1,7 +1,15 @@
 "use client";
 
-import type { Contact } from "@prisma/client";
-import { Mail, Phone, ExternalLink, Trash2 } from "lucide-react";
+import type { Contact, Application, Company } from "@prisma/client";
+import {
+  Mail,
+  Phone,
+  ExternalLink,
+  Trash2,
+  Building2,
+  Briefcase,
+} from "lucide-react";
+import Link from "next/link";
 import {
   getRelationshipColor,
   getRelationshipIcon,
@@ -10,10 +18,14 @@ import {
 import { EditContactModal } from "./edit-contact-modal";
 
 interface ContactCardProps {
-  contact: Contact;
+  contact: Contact & {
+    application?: (Application & { company?: Company }) | null;
+  };
   onDelete?: (id: string) => void;
   isDeleting?: boolean;
   deleteTrigger?: React.ReactNode;
+  showApplication?: boolean;
+  href?: string;
 }
 
 export function ContactCard({
@@ -21,27 +33,36 @@ export function ContactCard({
   onDelete,
   isDeleting,
   deleteTrigger,
+  showApplication,
+  href,
 }: ContactCardProps) {
   return (
     <div className="group rounded-lg border bg-white p-4 shadow-sm dark:bg-gray-900 dark:border-gray-800 transition-all hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0 flex-1">
           <div
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${getRelationshipColor(contact.relationship)}`}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${getRelationshipColor(
+              contact.relationship
+            )}`}
           >
             {getRelationshipIcon(contact.relationship)}
           </div>
+
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {contact.name}
               </h3>
+
               <span
-                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getRelationshipColor(contact.relationship)}`}
+                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getRelationshipColor(
+                  contact.relationship
+                )}`}
               >
                 {getRelationshipLabel(contact.relationship)}
               </span>
             </div>
+
             {contact.role && (
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 truncate">
                 {contact.role}
@@ -52,6 +73,7 @@ export function ContactCard({
 
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
           <EditContactModal contact={contact} />
+
           {onDelete &&
             (deleteTrigger || (
               <button
@@ -78,6 +100,7 @@ export function ContactCard({
               {contact.email}
             </a>
           )}
+
           {contact.phone && (
             <a
               href={`tel:${contact.phone}`}
@@ -87,6 +110,7 @@ export function ContactCard({
               {contact.phone}
             </a>
           )}
+
           {contact.linkedIn && (
             <a
               href={contact.linkedIn}
@@ -98,6 +122,41 @@ export function ContactCard({
               LinkedIn
             </a>
           )}
+        </div>
+      )}
+
+      {showApplication &&
+        contact.application &&
+        contact.application.company && (
+          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1.5 truncate">
+              <Building2 className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">
+                {contact.application.company.name}
+              </span>
+            </div>
+
+            <span className="text-gray-300 dark:text-gray-700 shrink-0">
+              •
+            </span>
+
+            <div className="flex items-center gap-1.5 truncate">
+              <Briefcase className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">
+                {contact.application.role}
+              </span>
+            </div>
+          </div>
+        )}
+
+      {href && (
+        <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <Link
+            href={href}
+            className="text-sm font-medium text-blue-600 hover:underline"
+          >
+            View Profile →
+          </Link>
         </div>
       )}
     </div>
