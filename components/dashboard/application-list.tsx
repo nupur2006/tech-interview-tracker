@@ -3,8 +3,9 @@
 import { useOptimistic, useTransition, useState } from "react";
 import { ApplicationStatus } from "@prisma/client";
 import { format } from "date-fns";
-import { Building2, Calendar, MapPin, DollarSign, ExternalLink, MoreVertical, Trash2 } from "lucide-react";
+import { Building2, Calendar, MapPin, DollarSign, ExternalLink, MoreVertical } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import Link from "next/link";
 import { updateApplicationStatus, deleteApplication } from "@/app/actions/application";
 import { EditApplicationSheet } from "./edit-application-sheet";
 import { toast } from "sonner";
@@ -25,7 +26,7 @@ export function ApplicationList({ applications }: ApplicationListProps) {
     }
   );
 
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleStatusChange = async (id: string, status: ApplicationStatus) => {
@@ -75,18 +76,18 @@ export function ApplicationList({ applications }: ApplicationListProps) {
         <div key={app.id} className="group relative flex flex-col justify-between rounded-xl border bg-white p-5 shadow-sm transition-all hover:shadow-md dark:bg-gray-900 dark:border-gray-800">
           <div>
             <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
                 {app.company.logo ? (
-                  <img src={app.company.logo} alt={app.company.name} className="h-10 w-10 rounded-md object-cover border" />
+                  <img src={app.company.logo} alt={app.company.name} className="h-10 w-10 rounded-md object-cover border shrink-0" />
                 ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500">
                     <Building2 className="h-5 w-5" />
                   </div>
                 )}
-                <div>
-                  <h3 className="font-semibold leading-none">{app.role}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{app.company.name}</p>
-                </div>
+                <Link href={`/dashboard/applications/${app.id}`} className="truncate hover:underline">
+                  <h3 className="font-semibold leading-none truncate">{app.role}</h3>
+                  <p className="text-sm text-gray-500 mt-1 truncate">{app.company.name}</p>
+                </Link>
               </div>
 
               <DropdownMenu.Root>

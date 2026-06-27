@@ -1,10 +1,17 @@
-export default function SettingsPage() {
-    return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold">Settings</h1>
-            <p className="mt-2 text-gray-500">
-                Settings page coming soon.
-            </p>
-        </div>
-    );
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { SettingsPageClient } from "@/components/dashboard/settings/settings-page-client";
+
+export default async function SettingsPage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/");
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <SettingsPageClient user={session.user} />
+    </div>
+  );
 }

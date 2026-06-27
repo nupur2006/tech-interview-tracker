@@ -1,10 +1,20 @@
-export default function TimelinePage() {
-    return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold">Timeline</h1>
-            <p className="mt-2 text-gray-500">
-                Timeline page coming soon.
-            </p>
-        </div>
-    );
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getGlobalTimeline } from "@/app/actions/global-timeline";
+import { TimelinePageClient } from "@/components/dashboard/timeline/timeline-page-client";
+
+export default async function TimelinePage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/");
+  }
+
+  const activities = await getGlobalTimeline();
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <TimelinePageClient initialActivities={activities} />
+    </div>
+  );
 }

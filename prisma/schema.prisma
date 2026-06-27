@@ -51,6 +51,12 @@ enum InterviewOutcome {
   CANCELLED
 }
 
+enum InteractionType {
+  EMAIL
+  PHONE_CALL
+  MEETING
+}
+
 enum ReminderType {
   FOLLOW_UP
   DEADLINE
@@ -173,6 +179,7 @@ model Application {
   timelineEvents  TimelineEvent[]
   interviews      Interview[]
   reminders       Reminder[]
+  followUps       FollowUp[]
 
   @@index([userId])
   @@index([companyId])
@@ -194,7 +201,9 @@ model Contact {
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   // ── Relations ──
-  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application  Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  interactions Interaction[]
+  followUps   FollowUp[]
 
   @@index([applicationId])
   @@map("contacts")
@@ -262,4 +271,46 @@ model Reminder {
   @@index([userId, dueDate])
   @@index([applicationId])
   @@map("reminders")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CRM — Interactions & Follow-ups
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Interaction {
+  id        String          @id @default(cuid())
+  type      InteractionType
+  date      DateTime
+  summary   String          @db.Text
+  contactId String          @map("contact_id")
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([contactId, date])
+  @@map("interactions")
+}
+
+model FollowUp {
+  id            String    @id @default(cuid())
+  title         String
+  dueDate       DateTime  @map("due_date")
+  isCompleted   Boolean   @default(false) @map("is_completed")
+  completedAt   DateTime? @map("completed_at")
+  contactId     String?   @map("contact_id")
+  applicationId String?   @map("application_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  contact     Contact?     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([applicationId])
+  @@index([dueDate])
+  @@map("follow_ups")
 }

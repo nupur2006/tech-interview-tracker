@@ -2,7 +2,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getApplications } from "@/app/actions/application";
 import { AddApplicationModal } from "@/components/dashboard/add-application-modal";
-import { ApplicationList } from "@/components/dashboard/application-list";
+import { DashboardClient } from "@/components/dashboard/dashboard-client";
+import { UpcomingInterviewsWidget } from "@/components/dashboard/upcoming-interviews";
 import { ApplicationStatus } from "@prisma/client";
 import type { ApplicationFull } from "@/types";
 
@@ -18,13 +19,10 @@ export default async function DashboardPage() {
   // Calculate stats
   const total = applications.length;
   const activeCount = applications.filter(
-    (app) => ![ApplicationStatus.OFFER, ApplicationStatus.REJECTED, ApplicationStatus.WITHDRAWN].includes(app.status)
+    (app) => !([ApplicationStatus.OFFER, ApplicationStatus.REJECTED, ApplicationStatus.WITHDRAWN] as ApplicationStatus[]).includes(app.status)
   ).length;
   const offersCount = applications.filter((app) => app.status === ApplicationStatus.OFFER).length;
   
-  // Note: For now, we mock Interviews Scheduled since we'd need to fetch actual interviews
-  // To keep it clean, we just count applications in TECHNICAL or ONSITE as "Interviews Scheduled" roughly,
-  // or just count them based on relations.
   const interviewsCount = applications.reduce((acc, app) => acc + (app.interviews?.length || 0), 0);
 
   const stats = [
@@ -35,16 +33,16 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in relative pb-20">
       {/* Welcome */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Welcome back, {session.user.name?.split(" ")[0] ?? "there"} 👋
           </h1>
-          <p className="text-brand-400 mt-1">Here&apos;s your interview pipeline at a glance.</p>
+          <p className="text-gray-500 mt-1">Here&apos;s your interview pipeline at a glance.</p>
         </div>
-        <div>
+        <div className="hidden sm:block">
           <AddApplicationModal />
         </div>
       </div>
@@ -52,20 +50,31 @@ export default async function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="glass p-5 group hover:border-white/20 transition-all duration-300 rounded-xl bg-white/5 border border-white/10 dark:bg-gray-900/50 dark:border-gray-800">
+          <div key={stat.label} className="p-5 group hover:shadow-md transition-all duration-300 rounded-xl bg-white border border-gray-200 dark:bg-gray-900/50 dark:border-gray-800">
             <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-xl mb-3`}>
               {stat.icon}
             </div>
-            <div className="text-2xl font-bold text-white">{stat.value}</div>
-            <div className="text-sm text-brand-400 mt-0.5">{stat.label}</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
+            <div className="text-sm text-gray-500 mt-0.5">{stat.label}</div>
           </div>
         ))}
       </div>
 
-      {/* Application List */}
-      <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Your Applications</h2>
-        <ApplicationList applications={applications} />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Main Board */}
+        <div className="lg:col-span-3">
+          <DashboardClient initialApplications={applications} />
+        </div>
+        
+        {/* Sidebar */}
+        <div className="space-y-6">
+          <UpcomingInterviewsWidget />
+        </div>
+      </div>
+
+      {/* Quick Add Floating Button (Mobile or Global) */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <AddApplicationModal />
       </div>
     </div>
   );
