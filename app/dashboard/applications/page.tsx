@@ -1,10 +1,21 @@
-export default function ApplicationsPage() {
-    return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold">Applications</h1>
-            <p className="mt-2 text-gray-500">
-                Applications page coming soon.
-            </p>
-        </div>
-    );
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getApplications } from "@/app/actions/application";
+import { ApplicationsPageClient } from "@/components/dashboard/applications/applications-page-client";
+import type { ApplicationFull } from "@/types";
+
+export default async function ApplicationsPage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/");
+  }
+
+  const applications = await getApplications() as ApplicationFull[];
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      <ApplicationsPageClient initialApplications={applications} />
+    </div>
+  );
 }

@@ -12,7 +12,7 @@ export function Hero() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-light opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
           </span>
-          Now tracking 10,000+ interviews
+          Organize your complete job search in one place
         </div>
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-balance animate-slide-up">
           <span className="text-white">Track Every Step of</span>
@@ -20,8 +20,9 @@ export function Hero() {
           <span className="gradient-text">Your Interview Journey</span>
         </h1>
         <p className="mt-6 text-lg sm:text-xl text-brand-400 max-w-2xl mx-auto text-balance animate-slide-up animate-delay-100">
-          From application to offer letter. Organize your tech interview
-          pipeline, manage timelines, and never miss a follow-up again.
+          Track applications, organize recruiter contacts, manage interview
+          timelines, visualize your progress with analytics, and keep your job
+          search organized from application to offer.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up animate-delay-200">
           <a href="#features" className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-accent hover:bg-accent-dark rounded-xl transition-all duration-200 shadow-lg shadow-accent/25">
@@ -33,9 +34,9 @@ export function Hero() {
         </div>
         <div className="mt-20 grid grid-cols-3 gap-8 max-w-lg mx-auto animate-fade-in animate-delay-300">
           {[
-            { value: "10K+", label: "Interviews Tracked" },
-            { value: "2.5K+", label: "Offers Landed" },
-            { value: "98%", label: "Satisfaction" },
+            { value: "Kanban", label: "Application Tracking" },
+            { value: "CRM", label: "Recruiter Management" },
+            { value: "Analytics", label: "Insights Dashboard" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-white">{stat.value}</div>
