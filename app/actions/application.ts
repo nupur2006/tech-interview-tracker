@@ -203,6 +203,11 @@ export async function getApplications() {
     },
     include: {
       company: true,
+      interviews: {
+        where: { scheduledAt: { gte: new Date() } },
+        orderBy: { scheduledAt: "asc" },
+        take: 1,
+      },
     },
     orderBy: {
       updatedAt: "desc",
